@@ -4,7 +4,7 @@ Import photos directly from your Flickr account
 
 ## Requirements
 
-This plugin requires Craft CMS 4.12.0 or later, and PHP 8.0.2 or later.
+This plugin requires Craft CMS 4.0.0 or later, and PHP 8.0.2 or later.
 
 ## Installation
 
