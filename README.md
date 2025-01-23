@@ -56,17 +56,21 @@ Make sure an album was returned. Render original photos:
 ```
 {% if album %}
     {% for photo in album.photos %}
-        <img src="{{ photo.url }}"/>
+        <img src="{{ photo.original }}"/>
     {% endfor %}
 {% else %}
     <!-- error handling here -->
 {% endif %}
 ```
 
-Render different photo sizes (original, t, q, m, z, b, w):
+Render different photo sizes (t, q, m, z, b, w):
 
 ```
-{% for photo in album.photos %}
-    <img src="{{ photo.sizes.t }}"/>
-{% endfor %}
+{% if album %}
+    {% for photo in album.photos %}
+        <img src="{{ photo.sizes.t }}"/>
+    {% endfor %}
+{% else %}
+    <!-- error handling here -->
+{% endif %}
 ```
