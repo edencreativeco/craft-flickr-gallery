@@ -10,15 +10,16 @@ use craft\events\DefineAttributeKeywordsEvent;
 use craft\events\RegisterElementSearchableAttributesEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\RegisterUserPermissionsEvent;
 use craft\log\MonologTarget;
 use craft\services\Fields;
+use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
 use edencreative\craftflickrgallery\models\SiteSettingsData;
 use edencreative\craftflickrgallery\assets\FlickrAssetBundle;
 use edencreative\craftflickrgallery\base\PluginTrait;
-use edencreative\craftflickrgallery\elements\db\FlickrAssetQuery;
 use edencreative\craftflickrgallery\elements\FlickrAsset;
 use edencreative\craftflickrgallery\fields\FlickrAlbumField;
 use edencreative\craftflickrgallery\models\Settings;
@@ -109,6 +110,8 @@ class Plugin extends BasePlugin
         $this->_registerCustomFieldTypes();
 
         $this->_extendTwig();
+
+        $this->_registerPermissions();
 
 
 
@@ -358,6 +361,29 @@ class Plugin extends BasePlugin
             ),
         ]);
     }
+
+
+    private function _registerPermissions(): void
+    {
+        // Register new user permissions
+        Event::on(
+            UserPermissions::class,
+            UserPermissions::EVENT_REGISTER_PERMISSIONS,
+            function (RegisterUserPermissionsEvent $event) {
+
+                // Orders Permissions
+                $event->permissions[] = [
+                    'heading' => 'Flickr Gallery',
+                    'permissions' => [
+                        'flickr-gallery:site-settings' => [
+                            'label' => 'Edit Site Settings'
+                        ]
+                    ],
+                ];
+            }
+        );
+    }
+
 
 
     // Protected Methods

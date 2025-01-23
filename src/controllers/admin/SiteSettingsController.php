@@ -27,6 +27,7 @@ class SiteSettingsController extends Controller
 
     public function actionEdit(): Response
     {
+        $this->requirePermission('flickr-gallery:site-settings');
 
         // Get settings from site ID
         $settingsData = Plugin::$plugin->siteSettings;
@@ -68,7 +69,8 @@ class SiteSettingsController extends Controller
 
     public function actionSave(): ?Response
     {
-        
+        $this->requirePermission('flickr-gallery:site-settings');
+
         $params = $this->request->getBodyParams();
 
 
