@@ -59,7 +59,7 @@ class SiteSettingsController extends Controller
             ],
             [
                 'label' => 'Site Settings',
-                'url' => UrlHelper::cpUrl('edenhockey/site-settings'),
+                'url' => UrlHelper::cpUrl('flickr-gallery/site-settings'),
             ],
         ];
 

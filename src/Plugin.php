@@ -31,7 +31,7 @@ use Psr\Log\LogLevel;
 use yii\base\Event;
 
 /**
- * craft-flickr-gallery plugin
+ * Flickr Gallery plugin
  * 
  * @author Eden Creative <developers@edencreative.co>
  * @copyright Eden Creative
@@ -84,7 +84,7 @@ class Plugin extends BasePlugin
 
 
         $request = Craft::$app->getRequest();
-        
+
         // Add JS and CSS resources to admin panel
         if (
             $this->isInstalled
@@ -95,7 +95,7 @@ class Plugin extends BasePlugin
 
         // Set custom logfile
         $this->_setCustomLogger();
-        
+
         // Load Services
         $this->setComponents([
             'flickr' => TwigService::class,
@@ -116,7 +116,7 @@ class Plugin extends BasePlugin
         Event::on(
             Asset::class,
             Asset::EVENT_REGISTER_SEARCHABLE_ATTRIBUTES,
-            function(RegisterElementSearchableAttributesEvent $event) {
+            function (RegisterElementSearchableAttributesEvent $event) {
                 error_log('asset searchable attributes');
                 $event->attributes[] = 'flickr_photo_id';
                 $event->attributes[] = 'flickr_album';
@@ -127,12 +127,12 @@ class Plugin extends BasePlugin
         Event::on(
             Asset::class,
             Asset::EVENT_DEFINE_KEYWORDS,
-            function(DefineAttributeKeywordsEvent $event) {
+            function (DefineAttributeKeywordsEvent $event) {
 
                 if (!in_array($event->attribute, ['flickr_photo_id', 'flickr_album', 'flickr_album_id'])) return;
 
                 $asset = $event->sender;
-                
+
                 $flickrAsset = FlickrAsset::find()
                     ->id($asset->id)
                     ->select(['flickr_photo_id', 'flickr_album', 'flickr_album_id'])
@@ -147,16 +147,17 @@ class Plugin extends BasePlugin
                 $event->handled = true;
             }
         );
-        
+
 
         // Any code that creates an element query or loads Twig should be deferred until
         // after Craft is fully initialized, to avoid conflicts with other plugins/modules
-        Craft::$app->onInit(function() {
+        Craft::$app->onInit(function () {
             // ...
         });
     }
 
-    public function getHasFlickrCredentials(): bool {
+    public function getHasFlickrCredentials(): bool
+    {
         $ts = new TokensService();
         $token = $ts->getToken();
 
@@ -192,7 +193,7 @@ class Plugin extends BasePlugin
             ];
         }
 
-        if ( Craft::$app->getConfig()->general->allowAdminChanges ) {
+        if (Craft::$app->getConfig()->general->allowAdminChanges) {
             $subNav = array_merge($subNav, [
                 'system-settings' => [
                     'url' => 'settings/plugins/craft-flickr-gallery',
@@ -242,9 +243,10 @@ class Plugin extends BasePlugin
     }
 
 
-    private function _registerCpRoutes(): void {
+    private function _registerCpRoutes(): void
+    {
 
-        
+
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
@@ -260,8 +262,9 @@ class Plugin extends BasePlugin
         );
     }
 
-    private function _registerApiRoutes(): void {
-        
+    private function _registerApiRoutes(): void
+    {
+
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
@@ -282,7 +285,8 @@ class Plugin extends BasePlugin
         );
     }
 
-    private function _registerCustomFieldTypes(): void {
+    private function _registerCustomFieldTypes(): void
+    {
         Event::on(
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
@@ -293,7 +297,8 @@ class Plugin extends BasePlugin
     }
 
 
-    private function _extendTwig(): void {
+    private function _extendTwig(): void
+    {
 
         // extend twig with cart service
         Event::on(
@@ -313,7 +318,8 @@ class Plugin extends BasePlugin
     /**
      * 
      */
-    private function _registerTemplateRoots(): void {
+    private function _registerTemplateRoots(): void
+    {
 
         // Register template roots
         Event::on(
@@ -332,12 +338,12 @@ class Plugin extends BasePlugin
                 $event->roots['craft-flickr-gallery'] = __DIR__ . '/templates';
             }
         );
-        
     }
 
 
 
-    private function _setCustomLogger(): void {
+    private function _setCustomLogger(): void
+    {
 
         // Register a custom log target, keeping the format as simple as possible.
         Craft::getLogger()->dispatcher->targets[] = new MonologTarget([

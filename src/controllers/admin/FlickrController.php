@@ -4,8 +4,6 @@ namespace edencreative\craftflickrgallery\controllers\admin;
 
 use Craft;
 use craft\web\Controller;
-use edencreative\craftflickrgallery\Plugin;
-use craft\web\Response;
 use edencreative\craftflickrgallery\elements\FlickrAsset;
 
 /**
@@ -16,7 +14,6 @@ class FlickrController extends Controller {
 
     // Properties
     // =========================================================================
-    // protected array|bool|int $allowAnonymous = ['create'];
 
 
     // Public Methods

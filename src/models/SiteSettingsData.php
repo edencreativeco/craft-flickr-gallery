@@ -2,16 +2,14 @@
 
 namespace edencreative\craftflickrgallery\models;
 
-use Craft;
 use craft\base\Model;
-use craft\helpers\Json;
 
 /**
  * Site Settings Data object, containing properties that will be json-encoded into the database
  * 
- * @author    edencreative
- * @package   Craft Flickr Gallery
- * @since     1.0.0
+ * @author  Eden Creative <developers@edencreative.co>
+ * @package Flickr Gallery
+ * @since   1.0.0
  * 
  */
 class SiteSettingsData extends Model

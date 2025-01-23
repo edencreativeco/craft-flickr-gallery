@@ -1,4 +1,4 @@
-# craft-flickr-gallery
+# Flickr Gallery
 
 Import photos directly from your Flickr account
 

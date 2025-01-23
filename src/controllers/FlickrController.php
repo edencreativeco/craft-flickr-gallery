@@ -6,10 +6,8 @@ use Craft;
 use craft\helpers\Queue;
 use craft\web\Controller;
 use craft\web\Response;
-use edencreative\craftflickrgallery\Plugin;
 use edencreative\craftflickrgallery\queue\jobs\ImportFlickrAlbum;
 use edencreative\craftflickrgallery\queue\jobs\ImportFlickrPhotos;
-use edencreative\craftflickrgallery\services\AssetsService;
 use edencreative\craftflickrgallery\services\FlickrService;
 
 /**

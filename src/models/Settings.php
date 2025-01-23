@@ -8,9 +8,9 @@ use craft\base\Model;
 /**
  * craft-flickr-gallery settings
  *
- * @author    edencreative
- * @package   Craft Flickr Gallery
- * @since     1.0.0
+ * @author  Eden Creative <developers@edencreative.co>
+ * @package Flickr Gallery
+ * @since   1.0.0
  */
 class Settings extends Model
 {
@@ -48,8 +48,9 @@ class Settings extends Model
     public string $callbackUrl = '';
 
 
-    
-    public function defineRules(): array {
+
+    public function defineRules(): array
+    {
         return [
             ['pluginName', 'string'],
             ['pluginName', 'default', 'value' => 'Flickr Gallery'],
@@ -63,5 +64,4 @@ class Settings extends Model
             ['callbackUrl', 'default', 'value' => ''],
         ];
     }
-
 }

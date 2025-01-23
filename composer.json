@@ -21,6 +21,12 @@
         "docs": "https://github.com/edencreativeco/craft-flickr-gallery",
         "rss": "https://github.com/edencreativeco/craft-flickr-gallery/releases.atom"
     },
+    "authors": [
+        {
+            "name": "Eden Creative",
+            "homepage": "https://edencreative.co"
+        }
+    ],
     "require": {
         "php": ">=8.0.2",
         "craftcms/cms": "^4.0.0",
@@ -37,7 +43,7 @@
     },
     "extra": {
         "handle": "craft-flickr-gallery",
-        "name": "craft-flickr-gallery",
+        "name": "Flickr Gallery",
         "developer": "Eden Creative",
         "documentationUrl": "https://github.com/edencreativeco/craft-flickr-gallery"
     },

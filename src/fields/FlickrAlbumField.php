@@ -6,7 +6,6 @@ use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\helpers\Json;
-use craft\web\assets\cp\CpAsset;
 use edencreative\craftflickrgallery\assets\AlbumFieldAssetBundle;
 
 class FlickrAlbumField extends Field {

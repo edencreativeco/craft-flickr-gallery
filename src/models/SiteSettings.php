@@ -11,9 +11,9 @@ use edencreative\craftflickrgallery\Plugin;
 /**
  * Site Settings settings object, containing values that can be customized per environment
  *
- * @author    edencreative
- * @package   Craft Eden Hockey
- * @since     1.0.0
+ * @author  Eden Creative <developers@edencreative.co>
+ * @package Flickr Gallery
+ * @since   1.0.0
  * 
  */
 class SiteSettings extends Model

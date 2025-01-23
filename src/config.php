@@ -1,12 +1,13 @@
 <?php
+
 /**
  * Flickr Gallery plugin for Craft CMS 4.x
  */
 
 /**
- * @author    edencreative
- * @package   Craft Flickr Gallery
- * @since     1.0.0
+ * @author  Eden Creative <developers@edencreative.co>
+ * @package Flickr Gallery
+ * @since   1.0.0
  */
 
 /**
