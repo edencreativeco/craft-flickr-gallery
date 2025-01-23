@@ -1,0 +1,99 @@
+{# @var plugin \edencreative\craftflickrgallery\Plugin #}
+{# @var settings \edencreative\craftflickrgallery\models\Settings #}
+
+{% import '_includes/forms.twig' as forms %}
+
+{# {% set tabs = {
+  _general: {
+    label: "General",
+    url: "#_general",
+  },
+  _flickrSettings: {
+    label: "Flickr",
+    url: "#_flickrSettings",
+  },
+} %} #}
+
+<div id="main_settings">
+
+  <h2>General Settings</h2>
+
+  {{ forms.textField({
+    first: true,
+    label: 'Plugin Name',
+    name: 'pluginName',
+    value: settings.pluginName,
+    errors: settings.getErrors('pluginName'),
+  }) }}
+
+  <h2>Flickr API</h2>
+
+  {{ forms.textField({
+    label: 'Username',
+    name: 'flickrUsername',
+    value: settings.flickrUsername,
+    errors: settings.getErrors('flickrUsername'),
+  }) }}
+  {{ forms.textField({
+    label: 'API Key',
+    name: 'flickrApiKey',
+    value: settings.flickrApiKey,
+    errors: settings.getErrors('flickrApiKey'),
+  }) }}
+  {{ forms.textField({
+    label: 'API Secret',
+    name: 'flickrApiSecret',
+    value: settings.flickrApiSecret,
+    errors: settings.getErrors('flickrApiSecret'),
+  }) }}
+  {{ forms.textField({
+    label: 'Custom Callback Url',
+    instructions: 'If using a proxy for local setup, put your base url here. The relative callback path will be added at the end, and displayed below.',
+    name: 'callbackUrl',
+    value: settings.callbackUrl,
+    errors: settings.getErrors('callbackUrl'),
+  }) }}
+
+  {% if plugin.hasFlickrCredentials %}
+      <p>Your plugin is connected to Flickr!</p>
+
+
+      {% set linkAttributes = {
+          class: [
+              'formsubmit btn small',
+          ],
+          data: {
+              action: 'craft-flickr-gallery/oauth/disconnect',
+              params: { username: settings.flickrUsername },
+              confirm: 'Are you sure you want to disconnect from your Flickr account?',
+          },
+      } %}
+      <a {{ attr(linkAttributes) }}>Disconnect</a>
+  
+  {% else %}
+
+    <div class="field">
+      <div class="heading">
+        <label for="flickr-connect">Connect to Flickr</label>
+      </div>
+      <div class="instructions">
+        <p>Save any changes to your plugin settings before clicking 'Connect'</p>
+      </div>
+
+      {% set btnDisabled = not (settings.flickrUsername and settings.flickrApiKey and settings.flickrApiSecret) %}
+      {{ tag('a', {
+        id: 'flickr-connect',
+        text: 'Connect',
+        class: 'btn submit' ~ (btnDisabled ? " disabled" : ""),
+        href: btnDisabled ? "" : url('actions/craft-flickr-gallery/oauth/connect'),
+        target: '_blank',
+        disabled: btnDisabled
+      }) }}
+
+      <p>Callback URL: {{ callbackUrl }}</p>
+    </div>
+
+  {% endif %}
+  
+</div>
+

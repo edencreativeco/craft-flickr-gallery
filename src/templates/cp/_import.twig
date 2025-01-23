@@ -1,0 +1,158 @@
+{% extends "_layouts/cp.twig" %}
+{% import 'craft-flickr-gallery/_includes/flickr-forms.twig' as flickrForms %}
+
+{% set title = "Flickr Asset Import" %}
+
+
+{% set crumbs = [
+  {
+    label: 'Assets',
+    url: url('flickr-gallery/assets'),
+  },
+  {
+    label: "Flickr Assets",
+    url: url('flickr-gallery/import')
+  },
+] %}
+
+{# {% block header %}
+    <h1 class="screen-title">{{ title }}</h1>
+{% endblock %} #}
+
+{% block details %}{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+
+    {% if craft.flickr.isConnected %}
+
+        {% set photostreamData = craft.flickr.getPhotos({ size: 'q', perpage: 4 }) %}
+        {% if photostreamData %}
+
+            <h2>Photostream</h2>
+            <div>
+                <button id="photostream-modal-selector">
+                    <div class="flickr-album-block">
+                        <div class="content">
+                            <h3>Photostream</h3>
+                        </div>
+                        <div class="flickr-album-cover flickr-photostream-cover">
+                            {% for photo in photostreamData.photos %}
+                                <img src="{{ photo.url }}" alt="{{ photo.title }}">
+                            {% endfor %}
+                        </div>
+                    </div>
+                </button>
+
+                <div id="photostream-modal" class="modal flickr-album-modal" style="display: none;">
+                    <div class="container">
+                        <div class="header">
+                            <h2>Photostream</h2>
+                        </div>
+                        <div class="body">
+                            <div class="flickr-photos"></div>
+                            <div class="flickr-pagination"></div>
+                        </div>
+                        <div class="footer">
+                            <div class="buttons left secondary-buttons"></div>
+                            <div class="buttons right">
+                                <div class="flickr-import-size-field">
+                                    {{ flickrForms.importSizeSelector({
+                                        id: 'photostream_import_size',
+                                        name: 'import_size'
+                                    }) }}
+                                </div>
+                                <button class="btn cancel" type="button">Cancel</button>
+                                <button class="btn submit disabled" type="button" data-import-selected-btn>Import Selected (<span data-photo-count>0</span>)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: 25px"></div>
+        {% endif %}
+
+        {% set photosets = craft.flickr.getPhotosets({
+            page: craft.app.request.getQueryParam('albums-page') ?? 1,
+            perpage: 30
+        }) %}
+
+        {% if photosets %}
+        
+            <h2>Albums</h2>
+            <div>
+                <div class="flickr-albums">
+                    {% for photoset in photosets.albums %}
+                        {% set modalId = "flickr-album-modal--" ~ photoset.id %}
+
+                        {# {% set data = craft.flickr.getPhotoset(photoset.id, 'm') %} #}
+                        {% set albumTitle = photoset.title._content %}
+                        <button class="flickr-modal-selector" data-modal-id="{{ modalId }}">
+                            <div class="flickr-album-block">
+                                <div class="content">
+                                    <h3>{{ albumTitle }} ({{ photoset.photos }})</h3>
+                                </div>
+                                <div class="flickr-album-cover">
+                                    <img src="{{ photoset.cover }}" alt="{{ albumTitle }}">
+                                </div>
+                            </div>
+                        </button>
+
+                        <div id="{{ modalId }}" data-photoset-id="{{ photoset.id }}" class="modal flickr-album-modal" style="display: none;">
+                            <div class="container">
+                                <div class="header">
+                                        <h2>{{ albumTitle }}</h2>
+                                </div>
+                                <div class="body">
+                                    <div class="flickr-photos">
+                                        Loading...
+                                        {# {% for photo in data.photos %}
+                                            <img class="flickr-photo-thumb" src="{{ photo.url }}" alt="{{ photo.title }}">
+                                        {% endfor %} #}
+                                    </div>
+                                    <div class="flickr-pagination"></div>
+                                </div>
+                                <div class="footer">
+                                    <div class="buttons left secondary-buttons">
+                                    </div>
+                                    <div class="buttons right">
+                                        <div class="flickr-import-size-field">
+                                            {{ flickrForms.importSizeSelector({
+                                                id: photoset.id ~ '_album_import_size',
+                                                name: 'import_size'
+                                            }) }}
+                                        </div>
+                                        <button class="btn cancel" type="button">Cancel</button>
+                                        <button class="btn submit disabled" type="button" data-import-selected-btn>Import Selected (<span data-photo-count>0</span>)</button>
+                                        <button class="btn submit" type="submit" data-import-album-btn>Import Album</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    {% endfor %}
+                </div>
+                {% if photosets.pagination.pages > 1 %}
+                <div class="flickr-pagination" style="margin-top: 30px">
+                    {% for i in range(1, photosets.pagination.pages) %}
+                        <a {% if i != photosets.pagination.page %}href="{{ url('flickr-gallery/import?albums-page=' ~ i) }}" {% endif %}class="btn{% if i == photosets.pagination.page %} current disabled{% endif %}" data-page="{{ i }}">{{ i }}</a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    {% else %}
+        {# Flickr plugin NOT connected #}
+        {% if craft.app.config.general.allowAdminChanges %}
+            <p>You don't have an access token set up for Flickr yet. Head to the <a href="{{ cpUrl('settings/plugins/craft-flickr-gallery') }}">System Settings</a> to integrate with a Flickr account.</p>
+        {% else %}
+            <p>You don't have an access token set up for Flickr yet. Contact your system administrator to set up integration with a Flickr account.</p>
+        {% endif %}
+        
+    {% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% macro importSizeSelector(config) %}
+    {% import '_includes/forms.twig' as forms %}
+    {{ forms.selectizeField({
+        label: 'Import Size'|t('app'),
+        id: config.id ?? config.name ?? null,
+        fieldClass: "",
+        options: [
+            {
+                label: "Original",
+                value: 'original',
+            },
+            {
+                label: "Large (1024px)",
+                value: 'b',
+            },
+        ],
+        value: 'original',
+    }|merge(config)) }}
+{% endmacro %}

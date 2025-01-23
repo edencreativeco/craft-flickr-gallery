@@ -1,0 +1,37 @@
+<div class="flickr-album-field">
+    <input
+        type="number"
+        id="{{ name }}"
+        name="{{ name }}"
+        value="{{ value ?? null}}"
+        readonly
+        class="hidden"
+    >
+    <div class="flickr-album-select{% if value %} has-album{% endif %}">
+        <button type="button" class="btn add icon dashed flickr-album-select-btn" data-field="{{ name|namespaceInputName }}">
+            Select Album
+        </button>
+        {% if value %}
+            {% set data = craft.flickr.getPhotosetDetails(value) %}
+            <div class="elements flex-row">
+                <div class="element hasthumb large removable" title="{{ data.title}}" data-kind="image" data-id="{{ data.id}}" data-label="{{ data.title}}" tabindex="0" style="visibility: visible;">
+                    <button type="button" class="delete icon" title="Remove" aria-label="Remove {{ data.title}}"></button>
+                    <div class="elementthumb">
+                        {% if data.cover %}
+                            <img sizes="100px" src="{{ data.cover }}">
+                        {% endif %}
+                    </div>
+                    <div class="label"><span class="title">{{ data.title }}</span></div>
+                </div> 
+            </div>
+        {% endif %}
+    </div>
+</div>
+<script data-remove-flickr-script>
+    if (Craft?.initFlickrAlbumSelectFields) {
+        Craft.initFlickrAlbumSelectFields();
+    }
+
+    document.querySelectorAll('[data-remove-flickr-script]').forEach(el => el.remove());
+
+</script>

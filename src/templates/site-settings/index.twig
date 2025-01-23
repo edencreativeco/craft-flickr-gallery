@@ -1,0 +1,36 @@
+{% requirePermission "flickr-gallery:site-settings" %}
+
+{% extends "_layouts/cp" %}
+{% import '_includes/forms.twig' as forms %}
+{% import '_components/fieldtypes/Assets/settings.twig' as assetsFieldSettings %}
+
+{% set title = "Site Settings" %}
+{% set fullPageForm = true %}
+
+
+{% block content %}
+
+	{{ assetsFieldSettings.uploadLocationField({
+        id: 'flickr-asset-upload-location',
+        label: 'Flickr Asset Upload Location'|t('craft-flickr-gallery'),
+        instructions: 'The location where assets will be imported to.'|t('craft-flickr-gallery'),
+        tip: "The path can contain variables like {slug} or {author.username}.",
+        name: 'flickrAssetImportPath',
+        sourceOptions: volumeSourceOptions,
+        sourceValue: settings.flickrAssetImportPathSource,
+        subpathValue: settings.flickrAssetImportPathSubpath,
+        errors: settings.getErrors('flickrAssetImportSource') + settings.getErrors('flickrAssetImportPathSubpath')
+    }) }}
+
+	{{ forms.lightswitchField({
+        label: 'Album Name As Subfolder',
+        id: 'albumNameAsSubfolder',
+        name: 'albumNameAsSubfolder',
+        fieldClass: 'width-25',
+        on: settings.albumNameAsSubfolder,
+        errors: settings.getErrors('albumNameAsSubfolder'),
+    }) }}
+
+	{{ actionInput('craft-flickr-gallery/admin/site-settings/save') }}
+
+{% endblock %}

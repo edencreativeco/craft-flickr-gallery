@@ -1,0 +1,13 @@
+
+
+<div class="flickr-gallery-container" data-album-id="{{ photoset.id }}">
+    <div style="display: none;" data-flickr-gallery-pagination data-page="{{ photoset.pagination.page }}" data-pages="{{ photoset.pagination.pages }}" data-perpage="{{ photoset.pagination.perpage }}" data-total="{{ photoset.pagination.total }}"></div>
+    <div class="flickr-gallery-grid">
+        {% for photo in photoset.photos %}
+            <div class="flickr-gallery-image-container">
+                <img data-photo-id="{{ photo.id }}" {% if options.class is defined %}class="{{ options.class }}"{% endif %} src="{{ photo.sizes.t }}" srcset="{{ photo.srcset }}" sizes="{{ options.sizes ?? "640px" }}"/>
+            </div>
+        {% endfor %}
+    </div>
+    <div data-album-load-photos></div>
+</div>

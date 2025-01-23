@@ -1,0 +1,18 @@
+# CRAFT ENVIRONMENT
+.env.php
+.env.sh
+.env
+
+# COMPOSER
+/vendor
+
+# BUILD FILES
+/node_modules
+/build
+
+
+# MISC FILES
+*.DS_Store
+*.idea/*
+*.log
+*Thumbs.db

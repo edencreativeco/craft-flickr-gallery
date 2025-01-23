@@ -1,0 +1,108 @@
+{% extends "_layouts/cp.twig" %}
+
+{% set title = "Flickr Assets" %}
+
+
+{% set crumbs = [
+  {
+    label: 'Assets',
+    url: url('flickr-gallery/assets'),
+  },
+  {
+    label: "Flickr Assets",
+    url: url('flickr-gallery/import')
+  },
+] %}
+
+{# {% block header %}
+    <h1 class="screen-title">{{ title }}</h1>
+{% endblock %} #}
+
+{% block details %}{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+  <div id="header-container">
+    <form action="">
+      <div class="search-container flex-grow texticon has-filter-btn">
+          <span class="texticon-icon search icon" aria-hidden="true"></span>
+          <input name="q" type="text" class="clearable text fullwidth" autocomplete="off" placeholder="Search" dir="ltr" aria-label="Search" value="{{ searchQuery }}">
+          <button class="clear-btn hidden" title="Clear search" role="button" aria-label="Clear search"></button>
+      </div>
+    </form>
+  </div>
+
+  <table class="data fullwidth" data-name="Flickr Assets">
+    <thead>
+      <tr>
+        <th scope="col" data-attribute="title">Asset</th>
+        <th scope="col" data-attribute="filename">Filename</th>
+        <th scope="col" data-attribute="photo_id">Flickr ID</th>
+        <th scope="col" data-attribute="album">Flickr Album</th>
+        <th scope="col" data-attribute="dateCreated">Import Date</th>
+        <th scope="col" data-attribute="import_size">Import Size</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for asset in flickrAssets %}
+        <tr data-title="{{ asset.title }}">
+          <th data-title="Asset" data-titlecell scope="row">
+            <div style="display: flex; align-items: center;">
+              <span style="display: inline-block; width: 32px; margin-right: 20px;">
+                {{ asset.getPreviewThumbImg(34, 34)|raw }}
+              </span>
+              <span class="label">
+                <span class="title">
+                  <a href="{{ asset.cpEditUrl }}">{{ asset.title }}</a>
+                </span>
+              </span>
+            </div>
+          </th>
+          <td data-title="Filename" data-attr="filename"><span class="break-word">{{ asset.filename }}</span></td>
+          <td data-title="Flickr ID" data-attr="photo_id">{{ asset.flickr_photo_id }}</td>
+          <td data-title="Flickr Album" data-attr="album">{{ asset.flickr_album }}</td>
+          <td data-title="Import Date" data-attr="dateCreated">{{ asset.dateCreated|date('m/d/Y H:ia') }}</td>
+          <td data-title="Import Size" data-attr="import_size">{{ asset.flickrImportSizeFormatted }}</td>
+        </tr>
+        {# <p><strong>{{ asset.id }} - {{ asset.photo_id }}</strong>{{ asset.title }}</p> #}
+      {% endfor %}
+    </tbody>
+  </table>
+    {# <div>TEST</div>
+    <div>
+      {% for asset in flickrAssets %}
+        <p><strong>{{ asset.id }} - {{ asset.photo_id }}</strong>{{ asset.title }}</p>
+      {% endfor %}
+    </div> #}
+
+  <div id="footer">
+    <div class="flex pagination">
+
+      {% set queryParams = craft.app.request.getQueryParams() %}
+      {% set prevParams = queryParams | merge({
+        page: pagination.page - 1
+      }) %}
+      {% set nextParams = queryParams | merge({
+        page: pagination.page + 1
+      }) %}
+
+      <nav class="flex" aria-label="asset pagination">
+        <a href="{{ prevParams.page > 0 ? cpUrl(craft.app.request.pathInfo ~ '?' ~ prevParams|url_encode) : "" }}" role="button" class="page-link prev-page {% if prevParams.page < 1 %}disabled{% endif %}" {% if prevParams.page < 1 %}disabled="disabled"{% endif %} title="Previous Page"></a>
+        <a href="{{ nextParams.page <= pagination.pages ? cpUrl(craft.app.request.pathInfo ~ '?' ~ nextParams|url_encode) : "" }}" role="button" class="page-link next-page {% if nextParams.page > pagination.pages %}disabled{% endif %}" {% if nextParams.page > pagination.pages %}disabled="disabled"{% endif %} title="Next Page"></a>
+      </nav>
+
+      <div class="page-info">{{ pagination.start }}-{{ pagination.end }} of {{ pagination.total }} assets</div>
+    </div>
+  </div>
+{# 
+  {% if pagination.pages is defined and pagination.pages > 1 %}
+    <div class="flickr-pagination">
+      {% for i in range(1, pagination.pages) %}
+          <a {% if i != pagination.page %}href="{{ cpUrl('flickr-gallery?page=' ~ i) }}" {% endif %}class="btn{% if i == pagination.page %} current disabled{% endif %}" data-page="{{ i }}">{{ i }}</a>
+      {% endfor %}
+    </div>
+  {% endif %} #}
+{% endblock %}
