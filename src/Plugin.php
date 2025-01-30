@@ -208,7 +208,7 @@ class Plugin extends BasePlugin
         return [
             'label' => 'Flickr Gallery',
             'url' => 'flickr-gallery',
-            'icon' => '@craft-flickr-plugin/assets/icons/flickr-icon.svg',
+            'icon' => '@craft-flickr-plugin/assets/icons/flickr-icon-round.svg',
             'subnav' => $subNav
         ];
     }
