@@ -7,12 +7,12 @@ use craft\db\Migration;
 use craft\helpers\Json;
 use edencreative\craftflickrgallery\models\SiteSettingsData;
 use edencreative\craftflickrgallery\records\SiteSettingsRecord;
-/**
- * Install migration.
- */
-class Install extends Migration
-{
 
+/**
+ * m250131_193059_fix_missing_installation_migrations migration.
+ */
+class m250131_193059_fix_missing_installation_migrations extends Migration
+{
     // Table Names
     // =========================================================================
     const TABLE_FLICKR_TOKENS = '{{%flickr_tokens}}';
@@ -29,8 +29,6 @@ class Install extends Migration
     public function safeUp(): bool
     {
         $this->createTables();
-        $this->createIndexes();
-        $this->addForeignKeys();
         $this->insertDefaultData();
 
         return true;
@@ -42,10 +40,8 @@ class Install extends Migration
      */
     public function safeDown(): bool
     {
-        $this->removeForeignKeys();
-        $this->removeTables();
-        
-        return true;
+        echo "m250131_193059_fix_missing_installation_migrations cannot be reverted.\n";
+        return false;
     }
 
 
@@ -54,23 +50,6 @@ class Install extends Migration
 
     protected function createTables(): void
     {
-
-        if (!$this->db->tableExists(self::TABLE_FLICKR_TOKENS)) {
-
-            // Create the Flickr Tokens table:
-            $this->createTable(self::TABLE_FLICKR_TOKENS, [
-                'id' => $this->primaryKey(),
-                'username' => $this->string(),
-                'token' => $this->string(),
-                'secret' => $this->string(),                
-                'dateCreated' => $this->dateTime()->notNull(),
-                'dateUpdated' => $this->dateTime()->notNull(),
-                'uid' => $this->uid()->notNull(),
-            ]);
-
-        }
-
-
         if (!$this->db->tableExists(self::TABLE_SITE_SETTINGS)) {
             
             // create the settings table
@@ -85,6 +64,10 @@ class Install extends Migration
             ]);
     
             echo "site settings table created.\n";
+
+            $this->addForeignKey( null, self::TABLE_SITE_SETTINGS, 'siteId', '{{%sites}}', 'id', 'CASCADE', 'CASCADE' );
+
+            echo "foreign keys added to flickr site settings table.\n";
     
         }
 
@@ -102,27 +85,21 @@ class Install extends Migration
             ]);
 
             echo "flickr assets table created.\n";
+
+            $this->createIndex(null, self::TABLE_FLICKR_ASSETS, ['photo_id']);
+            $this->createIndex(null, self::TABLE_FLICKR_ASSETS, ['album']);
+            $this->createIndex(null, self::TABLE_FLICKR_ASSETS, ['album_id']);
+
+            echo "flickr assets table indexed.\n";
+
+            $this->addForeignKey( null, self::TABLE_FLICKR_ASSETS, ['id'], '{{%elements}}', ['id'], 'CASCADE', null );
+
+            echo "foreign keys added to flickr assets table.\n";
+
         }
 
     }
 
-    protected function createIndexes(): void {
-        $this->createIndex(null, self::TABLE_FLICKR_ASSETS, ['photo_id']);
-        $this->createIndex(null, self::TABLE_FLICKR_ASSETS, ['album']);
-        $this->createIndex(null, self::TABLE_FLICKR_ASSETS, ['album_id']);
-    }
-
-    protected function addForeignKeys(): void {
-
-        $elementsTable = '{{%elements}}';
-
-        // site settings -> site id
-        $this->addForeignKey( null, self::TABLE_SITE_SETTINGS, 'siteId', '{{%sites}}', 'id', 'CASCADE', 'CASCADE' );
-
-        // flickr assets -> element id
-        $this->addForeignKey( null, self::TABLE_FLICKR_ASSETS, ['id'], $elementsTable, ['id'], 'CASCADE', null );
-
-    }
 
     protected function insertDefaultData(): void {
 
@@ -130,6 +107,10 @@ class Install extends Migration
         $sites = Craft::$app->getSites()->getAllSites();
 
         foreach ($sites as $site) {
+
+            $currentRecord = SiteSettingsRecord::find()->where(['siteId' => $site->id])->one();
+            if ($currentRecord) continue;
+
             $settings = Json::encode(
                 new SiteSettingsData()
             );
@@ -141,15 +122,5 @@ class Install extends Migration
             $settingsRecord->save();
         }
 
-    }
-
-    protected function removeForeignKeys(): void {
-        $this->dropAllForeignKeysToTable(self::TABLE_SITE_SETTINGS);
-    }
-
-    protected function removeTables(): void
-    {
-        $this->dropTableIfExists(self::TABLE_FLICKR_TOKENS);
-        $this->dropTableIfExists(self::TABLE_SITE_SETTINGS);
     }
 }

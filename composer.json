@@ -3,7 +3,7 @@
     "description": "Import photos directly from your Flickr account",
     "type": "craft-plugin",
     "license": "mit",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "keywords": [
       "craft",
       "cms",
@@ -11,6 +11,7 @@
       "craft-plugin",
       "flickr",
       "image",
+      "assets",
       "gallery",
       "import"
     ],
@@ -29,7 +30,7 @@
     ],
     "require": {
         "php": ">=8.0.2",
-        "craftcms/cms": "^4.0.0",
+        "craftcms/cms": "^4.0",
         "league/oauth1-client": "^1.10"
     },
     "require-dev": {
