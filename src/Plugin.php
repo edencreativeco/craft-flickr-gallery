@@ -174,6 +174,9 @@ class Plugin extends BasePlugin
     {
         /** @var User $currentUser */
         $currentUser = Craft::$app->getUser();
+        $isAdmin = $currentUser->isAdmin;
+        
+        $currentUser = $currentUser->getIdentity();
 
         $subNav = [
             'import' => [
@@ -194,7 +197,7 @@ class Plugin extends BasePlugin
             ];
         }
 
-        if ($currentUser?->isAdmin && Craft::$app->getConfig()->general->allowAdminChanges) {
+        if ($isAdmin && Craft::$app->getConfig()->general->allowAdminChanges) {
             $subNav = array_merge($subNav, [
                 'system-settings' => [
                     'url' => 'settings/plugins/craft-flickr-gallery',
