@@ -8,3 +8,9 @@
 
 ### Fixed
 - Fixed issue where db migrations were missing on installation
+
+
+## 1.0.2 - 2025-01-31
+
+### Fixed
+- Fixed bug where non-admins could not view plugin in cp nav

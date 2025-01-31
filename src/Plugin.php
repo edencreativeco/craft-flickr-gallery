@@ -173,9 +173,7 @@ class Plugin extends BasePlugin
     public function getCpNavItem(): ?array
     {
         /** @var User $currentUser */
-        $currentUser = Craft::$app->getUser()->getIdentity();
-
-        if (!$currentUser->can('flickr-gallery')) return null;
+        $currentUser = Craft::$app->getUser();
 
         $subNav = [
             'import' => [
@@ -189,14 +187,14 @@ class Plugin extends BasePlugin
         ];
 
 
-        if ($currentUser->can('flickr-gallery:site-settings')) {
+        if ($currentUser?->can('flickr-gallery:site-settings')) {
             $subNav['site-settings'] = [
                 'url' => 'flickr-gallery/site-settings',
                 'label' => 'Site Settings'
             ];
         }
 
-        if (Craft::$app->getConfig()->general->allowAdminChanges) {
+        if ($currentUser?->isAdmin && Craft::$app->getConfig()->general->allowAdminChanges) {
             $subNav = array_merge($subNav, [
                 'system-settings' => [
                     'url' => 'settings/plugins/craft-flickr-gallery',
