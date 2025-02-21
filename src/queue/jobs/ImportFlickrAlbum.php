@@ -64,12 +64,13 @@ class ImportFlickrAlbum extends BaseJob {
                     }
 
                     $ext = pathinfo($importUrl, PATHINFO_EXTENSION);
+                    $filename = $photo->title . "." . $ext;
 
-                    $newAsset = $as->saveFlickrImageAsAsset($photo->id, $importUrl, $photo->title . "." . $ext, $importFolder, [
+                    $newAsset = $as->saveFlickrImageAsAsset($photo->id, $importUrl, null, $importFolder, [
                         'album' => $albumName,
                         'album_id' => $this->albumId,
                         'import_size' => $this->importSize,
-                    ]);
+                    ], ['title' => $photo->title]);
                     $successes[] = $newAsset->id;
                 } catch (\Exception $e) {
                     $errorMessage = $e->getMessage();

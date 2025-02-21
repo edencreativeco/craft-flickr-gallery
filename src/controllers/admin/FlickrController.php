@@ -3,8 +3,10 @@
 namespace edencreative\craftflickrgallery\controllers\admin;
 
 use Craft;
+use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use edencreative\craftflickrgallery\elements\FlickrAsset;
+use edencreative\craftflickrgallery\Plugin;
 
 /**
  * Flickr Admin Controller
@@ -21,7 +23,7 @@ class FlickrController extends Controller {
 
     public function actionAssets() {
 
-        $perpage = intval(Craft::$app->getRequest()->getQueryParam('perpage') ?? 100);
+        $perpage = intval(Craft::$app->getRequest()->getQueryParam('perpage') ?? 50);
         $page = intval(Craft::$app->getRequest()->getQueryParam('page') ?? 1);
         if ($page < 0) $page = 1;
 
@@ -55,13 +57,35 @@ class FlickrController extends Controller {
             'flickrAssets' => $assets,
             'pagination' => $pagination,
             'searchQuery' => $search,
+            'title' => 'Flickr Assets',
+            'crumbs' => [
+                [
+                    'label' => Plugin::$plugin->settings->pluginName,
+                    'url' => UrlHelper::cpUrl('flickr-gallery'),
+                ],
+                [
+                    'label' => 'Assets',
+                    'url' => UrlHelper::cpUrl('flickr-gallery/assets'),
+                ],
+            ]
         ]);
     }
 
     public function actionImport() {
 
         return $this->renderTemplate('craft-flickr-gallery/cp/_import.twig', [
-            'selectedSubnavItem' => 'import'
+            'selectedSubnavItem' => 'import',
+            'title' => 'Flickr Asset Import',
+            'crumbs' => [
+                [
+                    'label' => Plugin::$plugin->settings->pluginName,
+                    'url' => UrlHelper::cpUrl('flickr-gallery'),
+                ],
+                [
+                    'label' => 'Import',
+                    'url' => UrlHelper::cpUrl('flickr-gallery/import'),
+                ],
+            ]            
         ]);
     }
 

@@ -120,7 +120,6 @@ class Plugin extends BasePlugin
             Asset::class,
             Asset::EVENT_REGISTER_SEARCHABLE_ATTRIBUTES,
             function (RegisterElementSearchableAttributesEvent $event) {
-                error_log('asset searchable attributes');
                 $event->attributes[] = 'flickr_photo_id';
                 $event->attributes[] = 'flickr_album';
                 $event->attributes[] = 'flickr_album_id';

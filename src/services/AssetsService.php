@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Component;
 use craft\elements\Asset;
 use craft\fields\Assets as AssetsField;
+use craft\helpers\Assets as AssetsHelper;
 use craft\helpers\Db;
 use edencreative\craftflickrgallery\db\Table;
 use edencreative\craftflickrgallery\Plugin;
@@ -16,27 +17,30 @@ class AssetsService extends Component {
      * Save flickr image data as a new asset
      * @param   int         $photoId
      * @param   string      $imageUrl
-     * @param   string      $filename
+     * @param   string|null $filename   the filename will be pulled from the image url if not provided
      * @param   int|null    $folderId   defaults to the import location defined in the site settings
      * @param   array       $flickrParams   optional. Any additional params to save to the flickr assets db (album, album_id)
      * @param   array       $metadata   optional. Include things like title, description, tags
      * @return  Asset
      * @throws  Exception
      */
-    public function saveFlickrImageAsAsset(int $photoId, string $imageUrl, string $filename, ?int $folderId = null, array $flickrParams = [], array $metadata = []): Asset {
+    public function saveFlickrImageAsAsset(int $photoId, string $imageUrl, ?string $filename = null, ?int $folderId = null, array $flickrParams = [], array $metadata = []): Asset {
 
+        if (!$filename) $filename = basename($imageUrl);
         if (!$folderId) $folderId = $this->getImportLocationFolderId();
 
         $tempPath = Craft::$app->getPath()->getTempPath() . '/' . $filename;
         file_put_contents($tempPath, file_get_contents($imageUrl));
 
         $asset = new Asset([
+            'title' => $metadata['title'] ?? null,
             'tempFilePath' => $tempPath,
             'filename' => $filename,
             'newFolderId' => $folderId,
-            // 'volumeId' => $folderId,
         ]);
 
+        // title is not allowed for setting custom field values
+        unset($metadata['title']);
         $asset->setFieldValues($metadata);
 
 
@@ -69,6 +73,8 @@ class AssetsService extends Component {
      * @return  int
      */
     public function getImportLocationFolderId(?string $subfolder = ""): int {
+
+        $subfolder = AssetsHelper::prepareAssetName($subfolder, false);
 
         // Get settings from site ID
         $settingsData = Plugin::$plugin->siteSettings;
