@@ -3,7 +3,7 @@
     "description": "Import photos directly from your Flickr account",
     "type": "craft-plugin",
     "license": "mit",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "keywords": [
       "craft",
       "cms",
