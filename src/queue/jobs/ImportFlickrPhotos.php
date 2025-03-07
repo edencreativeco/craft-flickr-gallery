@@ -41,6 +41,7 @@ class ImportFlickrPhotos extends BaseJob {
 
     /**
      * @var int[]   $assetIds
+     * @since 1.1.0
      */
     public array $assetIds = [];
 

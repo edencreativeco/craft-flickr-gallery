@@ -1,5 +1,12 @@
 # Release Notes for craft-flickr-gallery
 
+## 1.1.0 - 2025-03-07
+
+### Added
+- Ability to import Flickr photos directly to an Asset Selector field
+- queue\jobs\ImportFlickrPhotos will now track all asset IDs, including assets for flickr photos that have already been imported
+- new body param "immediate" is now supported in the FlickrController::actionImportPhotos method, allowing a request to bypass the queue and execute immediately
+
 ## 1.0.3 - 2025-02-21
 
 ### Changed
