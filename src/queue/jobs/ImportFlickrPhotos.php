@@ -4,6 +4,7 @@ namespace edencreative\craftflickrgallery\queue\jobs;
 
 use Craft;
 use craft\queue\BaseJob;
+use edencreative\craftflickrgallery\elements\FlickrAsset;
 use edencreative\craftflickrgallery\Plugin;
 use edencreative\craftflickrgallery\services\AssetsService;
 use edencreative\craftflickrgallery\services\FlickrService;
@@ -37,6 +38,11 @@ class ImportFlickrPhotos extends BaseJob {
      * @var int[]   $importedIds
      */
     public array $importedIds = [];
+
+    /**
+     * @var int[]   $assetIds
+     */
+    public array $assetIds = [];
 
     /**
      * @var int[]   $importedFlickrIds
@@ -78,33 +84,55 @@ class ImportFlickrPhotos extends BaseJob {
                 ])
             );
 
+            // Check to see if we already have the photo. Asset fields may try to import a photo we already have, in order to select the asset to the field.
+            $foundPhoto = null;
+            try {
+                $foundPhoto = FlickrAsset::find()
+                    ->flickrPhotoId($id)
+                    ->select(['id'])
+                    ->one();
+            } catch (\Throwable $e) {
+                # code...
+                Plugin::error("An error occurred during Flickr Asset query in ImportFlickrPhotos job");
+                Plugin::error($e->getMessage());
+            }
+
             
             try {
 
-                $photo = $fs->getCachedPhotoData($id) ?? $fs->getPhotoInfo($id);
-                if (!$photo) throw new \Exception("photo with id $id not found");
-
-                Plugin::info(json_encode($photo));
-
-                $importUrl = $photo->original;
-                if ($this->importSize && !empty($photo->sizes[$this->importSize])) {
-                    $importUrl = $photo->sizes[$this->importSize];
+                if ($foundPhoto) {
+                    $this->assetIds[] = $foundPhoto->id;
+                    $this->importedFlickrIds[] = $id;
+                    // track ids, but don't increment the imported count
                 } else {
-                    $this->importSize = 'original';
+
+                    $photo = $fs->getCachedPhotoData($id) ?? $fs->getPhotoInfo($id);
+                    if (!$photo) throw new \Exception("photo with id $id not found");
+    
+                    Plugin::info(json_encode($photo));
+    
+                    $importUrl = $photo->original;
+                    if ($this->importSize && !empty($photo->sizes[$this->importSize])) {
+                        $importUrl = $photo->sizes[$this->importSize];
+                    } else {
+                        $this->importSize = 'original';
+                    }
+    
+                    $ext = pathinfo($importUrl, PATHINFO_EXTENSION);
+                    $filename = $photo->title . "." . $ext;
+    
+                    $newAsset = $as->saveFlickrImageAsAsset($photo->id, $importUrl, null, $importFolder, [
+                        'album' => $this->albumName,
+                        'album_id' => $this->albumId,
+                        'import_size' => $this->importSize,
+                    ], ['title' => $photo->title]);
+    
+                    $this->importedIds[] = $newAsset->id;
+                    $this->assetIds[] = $newAsset->id;
+                    $this->importedFlickrIds[] = $id;
+                    $imported++;
                 }
 
-                $ext = pathinfo($importUrl, PATHINFO_EXTENSION);
-                $filename = $photo->title . "." . $ext;
-
-                $newAsset = $as->saveFlickrImageAsAsset($photo->id, $importUrl, null, $importFolder, [
-                    'album' => $this->albumName,
-                    'album_id' => $this->albumId,
-                    'import_size' => $this->importSize,
-                ], ['title' => $photo->title]);
-
-                $this->importedIds[] = $newAsset->id;
-                $this->importedFlickrIds[] = $id;
-                $imported++;
 
             } catch (\Exception $e) {
 

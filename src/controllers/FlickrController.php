@@ -107,11 +107,13 @@ class FlickrController extends Controller {
         $albumId = $this->request->getBodyParam('albumId', null);
         $albumName = $albumId ? ($fs->getPhotoset($albumId))?->photoset?->title : null;
         $importSize = $this->request->getBodyParam('import_size', 'original');
+        $immediate = $this->request->getBodyParam('immediate', false);
 
         if (!$photoIds) return $this->asJson([
             'success' => false,
             'errors' => ['missing required param "ids"'],
             'new_assets' => [],
+            'all_assets' => [],
             'message' => "Error - no images provided for import"
         ]);
 
@@ -123,7 +125,7 @@ class FlickrController extends Controller {
             'importSize' => $importSize,
         ]);
 
-        if (count($photoIds) > 5) {
+        if (count($photoIds) > 5 && !$immediate) {
             // Add to Queue
             Queue::push($job);
             $message = "Photo import job added to the queue";
@@ -132,6 +134,7 @@ class FlickrController extends Controller {
                 'success' => true,
                 'errors' => null,
                 'new_assets' => null,
+                'all_assets' => null,
                 'message' => $message
             ]);
 
@@ -142,6 +145,7 @@ class FlickrController extends Controller {
         $queue = Craft::$app->getQueue();
         $job->execute($queue);
         $importedAssetIds = $job->importedIds;
+        $allAssetIds = $job->assetIds;
         $importedFlickrIds = $job->importedFlickrIds;
         $importErrors = $job->importErrors;
 
@@ -161,6 +165,7 @@ class FlickrController extends Controller {
             'success' => $success,
             'errors' => $importErrors ?: null,
             'new_assets' => $importedAssetIds,
+            'all_assets' => $allAssetIds,
             'imported_flickr_photos' => $importedFlickrIds,
             'message' => $message
         ]);

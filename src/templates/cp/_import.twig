@@ -42,14 +42,15 @@
                             <div class="flickr-pagination"></div>
                         </div>
                         <div class="footer">
-                            <div class="buttons left secondary-buttons"></div>
-                            <div class="buttons right">
+                            <div class="buttons left secondary-buttons">
                                 <div class="flickr-import-size-field">
                                     {{ flickrForms.importSizeSelector({
                                         id: 'photostream_import_size',
                                         name: 'import_size'
                                     }) }}
                                 </div>
+                            </div>
+                            <div class="buttons right">
                                 <button class="btn cancel" type="button">Cancel</button>
                                 <button class="btn submit disabled" type="button" data-import-selected-btn>Import Selected (<span data-photo-count>0</span>)</button>
                             </div>
@@ -102,14 +103,14 @@
                                 </div>
                                 <div class="footer">
                                     <div class="buttons left secondary-buttons">
-                                    </div>
-                                    <div class="buttons right">
                                         <div class="flickr-import-size-field">
                                             {{ flickrForms.importSizeSelector({
                                                 id: photoset.id ~ '_album_import_size',
                                                 name: 'import_size'
                                             }) }}
                                         </div>
+                                    </div>
+                                    <div class="buttons right">
                                         <button class="btn cancel" type="button">Cancel</button>
                                         <button class="btn submit disabled" type="button" data-import-selected-btn>Import Selected (<span data-photo-count>0</span>)</button>
                                         <button class="btn submit" type="submit" data-import-album-btn>Import Album</button>
