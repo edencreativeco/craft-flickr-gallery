@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Model;
 use craft\base\Plugin as BasePlugin;
 use craft\elements\Asset;
+use craft\elements\User;
 use craft\events\DefineAttributeKeywordsEvent;
 use craft\events\RegisterElementSearchableAttributesEvent;
 use craft\events\RegisterTemplateRootsEvent;
@@ -92,6 +93,17 @@ class Plugin extends BasePlugin
             && $request->isCpRequest
         ) {
             $this->registerAssetBundles();
+
+            // add flickr gallery permissions to control panel js
+
+            /** @var ?User $currentUser */
+            $currentUser = Craft::$app->getUser()->getIdentity();
+
+            $permissions = [
+                'import' =>  $currentUser?->can('accessPlugin-craft-flickr-gallery'),
+                'settings' => $currentUser?->can('flickr-gallery:site-settings')
+            ];
+            Craft::$app->view->registerJsVar('flickrGalleryPermissions', $permissions);
         }
 
         // Set custom logfile

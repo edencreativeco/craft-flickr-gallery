@@ -1,5 +1,12 @@
 # Release Notes for craft-flickr-gallery
 
+## 1.1.1 - 2025-03-14
+
+### Fixed
+- Applied plugin permission checks to admin templates and api endpoints
+- The "Import from Flickr" button will no longer display on asset upload modals for users who do not have access to the Flickr Gallery plugin
+- Improved error notifications in cp for failed api calls
+
 ## 1.1.0 - 2025-03-07
 
 ### Added

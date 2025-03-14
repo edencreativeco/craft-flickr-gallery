@@ -80,6 +80,8 @@ class FlickrController extends Controller {
 
     public function actionImportAlbum(int $albumId): Response {
 
+        $this->requirePermission('accessPlugin-craft-flickr-gallery');
+
         $importSize = $this->request->getBodyParam('import_size', 'original');
 
         $job = new ImportFlickrAlbum([
@@ -100,6 +102,8 @@ class FlickrController extends Controller {
 
 
     public function actionImportPhotos(): Response {
+
+        $this->requirePermission('accessPlugin-craft-flickr-gallery');
 
         $fs = new FlickrService();
 
