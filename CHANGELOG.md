@@ -1,5 +1,10 @@
 # Release Notes for craft-flickr-gallery
 
+## 1.1.2 - 2025-03-19
+
+### Fixed
+- Fixed photo pagination bug in the asset modal import view
+
 ## 1.1.1 - 2025-03-14
 
 ### Fixed
