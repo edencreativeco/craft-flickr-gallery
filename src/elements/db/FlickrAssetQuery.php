@@ -59,25 +59,25 @@ class FlickrAssetQuery extends AssetQuery {
         $isValid = parent::beforePrepare();
 
         $addSelect = [
-            '{{%flickr-gallery_assets}}.photo_id AS flickr_photo_id',
-            '{{%flickr-gallery_assets}}.album_id AS flickr_album_id',
-            '{{%flickr-gallery_assets}}.album AS flickr_album',
-            '{{%flickr-gallery_assets}}.import_size AS flickr_import_size',
+            Table::FLICKR_ASSETS . '.photo_id AS flickr_photo_id',
+            Table::FLICKR_ASSETS . '.album_id AS flickr_album_id',
+            Table::FLICKR_ASSETS . '.album AS flickr_album',
+            Table::FLICKR_ASSETS . '.import_size AS flickr_import_size',
         ];
 
         $this->subQuery->addSelect($addSelect);
         $this->query->addSelect($addSelect);
 
         if ($this->flickrPhotoId) {
-            $this->subQuery->andWhere(Db::parseParam('{{%flickr-gallery_assets}}.photo_id', $this->flickrPhotoId));
+            $this->subQuery->andWhere(Db::parseParam(Table::FLICKR_ASSETS . '.photo_id', $this->flickrPhotoId));
         }
 
         if ($this->flickrAlbum) {
-            $this->subQuery->andWhere(Db::parseParam('{{%flickr-gallery_assets}}.album', $this->flickrAlbum));
+            $this->subQuery->andWhere(Db::parseParam(Table::FLICKR_ASSETS . '.album', $this->flickrAlbum));
         }
 
         if ($this->flickrAlbumId) {
-            $this->subQuery->andWhere(Db::parseParam('{{%flickr-gallery_assets}}.album_id', $this->flickrAlbumId));
+            $this->subQuery->andWhere(Db::parseParam(Table::FLICKR_ASSETS . '.album_id', $this->flickrAlbumId));
         }
 
         return $isValid;
