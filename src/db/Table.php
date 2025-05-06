@@ -8,9 +8,9 @@ namespace edencreative\craftflickrgallery\db;
  */
 abstract class Table {
 
-    const SITE_SETTINGS = '{{%flickr-gallery_site-settings}}';
+    const SITE_SETTINGS = '{{%flickr_gallery_site_settings}}';
 
     const FLICKR_TOKENS = '{{%flickr_tokens}}';
-    const FLICKR_ASSETS = '{{%flickr-gallery_assets}}';
+    const FLICKR_ASSETS = '{{%flickr_gallery_assets}}';
 
 }

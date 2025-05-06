@@ -29,7 +29,6 @@ class m250131_193059_fix_missing_installation_migrations extends Migration
     public function safeUp(): bool
     {
         $this->createTables();
-        $this->insertDefaultData();
 
         return true;
     }
@@ -96,30 +95,6 @@ class m250131_193059_fix_missing_installation_migrations extends Migration
 
             echo "foreign keys added to flickr assets table.\n";
 
-        }
-
-    }
-
-
-    protected function insertDefaultData(): void {
-
-
-        $sites = Craft::$app->getSites()->getAllSites();
-
-        foreach ($sites as $site) {
-
-            $currentRecord = SiteSettingsRecord::find()->where(['siteId' => $site->id])->one();
-            if ($currentRecord) continue;
-
-            $settings = Json::encode(
-                new SiteSettingsData()
-            );
-
-            $settingsRecord = new SiteSettingsRecord([
-                'siteId' => $site->id,
-                'settingsData' => $settings,
-            ]);
-            $settingsRecord->save();
         }
 
     }

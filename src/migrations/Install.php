@@ -16,8 +16,8 @@ class Install extends Migration
     // Table Names
     // =========================================================================
     const TABLE_FLICKR_TOKENS = '{{%flickr_tokens}}';
-    const TABLE_SITE_SETTINGS = '{{%flickr-gallery_site-settings}}';
-    const TABLE_FLICKR_ASSETS='{{%flickr-gallery_assets}}';
+    const TABLE_SITE_SETTINGS = '{{%flickr_gallery_site_settings}}';
+    const TABLE_FLICKR_ASSETS ='{{%flickr_gallery_assets}}';
 
 
     // Public Methods
@@ -130,6 +130,9 @@ class Install extends Migration
         $sites = Craft::$app->getSites()->getAllSites();
 
         foreach ($sites as $site) {
+            $currentRecord = SiteSettingsRecord::find()->where(['siteId' => $site->id])->one();
+            if ($currentRecord) continue;
+
             $settings = Json::encode(
                 new SiteSettingsData()
             );
