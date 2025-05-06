@@ -1,5 +1,10 @@
 # Release Notes for craft-flickr-gallery
 
+## 1.1.3 - 2025-05-06
+
+### Changed
+- Renamed db tables to remove dashes
+
 ## 1.1.2 - 2025-03-19
 
 ### Fixed
