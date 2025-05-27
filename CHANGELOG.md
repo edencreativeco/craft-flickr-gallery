@@ -1,5 +1,10 @@
 # Release Notes for craft-flickr-gallery
 
+## 1.1.4 - 2025-05-27
+
+### Fixed
+- Improve thumbnail rendering in assets index
+
 ## 1.1.3 - 2025-05-06
 
 ### Changed
