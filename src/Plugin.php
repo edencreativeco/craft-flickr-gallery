@@ -12,6 +12,7 @@ use craft\events\RegisterElementSearchableAttributesEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\events\TemplateEvent;
 use craft\log\MonologTarget;
 use craft\services\Fields;
 use craft\services\UserPermissions;
@@ -95,15 +96,21 @@ class Plugin extends BasePlugin
             $this->registerAssetBundles();
 
             // add flickr gallery permissions to control panel js
+            Event::on(
+                View::class,
+                View::EVENT_BEFORE_RENDER_TEMPLATE,
+                function(TemplateEvent $event) {
+                    /** @var ?User $currentUser */
+                    $currentUser = Craft::$app->getUser()->getIdentity();
 
-            /** @var ?User $currentUser */
-            $currentUser = Craft::$app->getUser()->getIdentity();
+                    $permissions = [
+                        'import' =>  $currentUser?->can('accessPlugin-craft-flickr-gallery'),
+                        'settings' => $currentUser?->can('flickr-gallery:site-settings')
+                    ];
+                    Craft::$app->view->registerJsVar('flickrGalleryPermissions', $permissions);
+                }
+            );
 
-            $permissions = [
-                'import' =>  $currentUser?->can('accessPlugin-craft-flickr-gallery'),
-                'settings' => $currentUser?->can('flickr-gallery:site-settings')
-            ];
-            Craft::$app->view->registerJsVar('flickrGalleryPermissions', $permissions);
         }
 
         // Set custom logfile

@@ -1,5 +1,10 @@
 # Release Notes for craft-flickr-gallery
 
+## 1.1.4 - 2025-05-06
+
+### Fixed
+- Fixed error "Element query executed before Craft is fully initialized" related to user permissions
+
 ## 1.1.3 - 2025-05-06
 
 ### Changed
