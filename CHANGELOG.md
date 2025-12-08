@@ -1,5 +1,13 @@
 # Release Notes for craft-flickr-gallery
 
+## 1.1.6 - 2025-09-12
+
+### Changed
+- Add rate limit throttling to Flickr API requests
+
+### Fixed
+- Handle authentication errors gracefully
+
 ## 1.1.5 - 2025-09-12
 
 ### Fixed

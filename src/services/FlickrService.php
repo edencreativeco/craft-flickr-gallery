@@ -20,6 +20,11 @@ class FlickrService extends Component {
         'z' => 640,
         'b' => 1024
     ];
+    
+    // Rate limiting constants
+    const RATE_LIMIT_REQUESTS_PER_MINUTE = 30;
+    const RATE_LIMIT_CACHE_KEY = 'flickr-api-rate-limit';
+    const RATE_LIMIT_THROTTLE_DELAY = 2; // seconds to wait when throttling
 
 
     //=================================================//
@@ -66,7 +71,7 @@ class FlickrService extends Component {
 
         $results = $this->fetch('photos.getInfo', [
             'photo_id' => $id
-        ]);
+        ], 60*60*6); // 6 hour cache for individual photos
 
         $photo = $results?->photo;
 
@@ -83,7 +88,7 @@ class FlickrService extends Component {
         $results->photo->original = $original;
         
         
-        return $this->photoDataResource($results->photo);        
+        return $this->photoDataResource($results->photo);
     }
 
     /**
@@ -97,7 +102,7 @@ class FlickrService extends Component {
 
         $results = $this->fetch('photos.getSizes', [
             'photo_id' => $id,
-        ]);
+        ], 60*60*6); // 6 hour cache for photo sizes
 
         return $results?->sizes?->size ?? null;
         // return $this->photoDataResource($results->photo);        
@@ -303,8 +308,9 @@ class FlickrService extends Component {
     /**
      * @param   string  $flickrMethod   api method to call (exclude the 'flickr.' at betinning)
      * @param   array   $params         any additional params to call
+     * @param   int     $cacheDuration  cache duration in seconds (default: 2 hours)
      */
-    private function fetch(string $flickrMethod, array $params = []): ?object {
+    private function fetch(string $flickrMethod, array $params = [], int $cacheDuration = 7200): ?object {
         $settings = Plugin::$plugin->getSettings();
         $oauthToken = (new TokensService())->getToken();
         if (!$oauthToken) return null;
@@ -343,21 +349,46 @@ class FlickrService extends Component {
 
         if (!$data) {
             // Make the request
-            $client = Craft::createGuzzleClient();
-            $response = $client->request($method, self::BASE_URL . "?" . $query);
+            try {
 
-            // Parse the response
-            $data = json_decode($response->getBody()->getContents());
+                // Check rate limiting
+                $this->throttleRequest();
 
-            if ( 'ok' != ($data?->stat ?? false) ) {
-                Plugin::error("Flickr API failed to fetch data for query " . self::BASE_URL . "?" . $query . " with message: " . ($data?->message ?? 'undefined'));
+                $client = Craft::createGuzzleClient();
+                $response = $client->request($method, self::BASE_URL . "?" . $query);
+                $responseBody = $response->getBody()->getContents();
+
+                // Parse the response
+                $data = json_decode($responseBody);
+
+                // Check if we got HTML instead of JSON (IP block scenario)
+                if (!$data && str_contains($responseBody, '<html>')) {
+                    Plugin::error("Flickr API returned HTML instead of JSON. Server IP may be blocked by Flickr. Response: " . substr($responseBody, 0, 500));
+                    return null;
+                }
+
+                if ('ok' != ($data?->stat ?? false)) {
+                    Plugin::error("Flickr API failed to fetch data for query " . self::BASE_URL . "?" . $query . " with message: " . ($data?->message ?? 'undefined'));
+                    return null;
+                }
+
+                // cache the response
+                Craft::$app->cache->set("flickr-fetch:$cacheQuery", $data, $cacheDuration);
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                $statusCode = $e->getResponse()->getStatusCode();
+                $responseBody = $e->getResponse()->getBody()->getContents();
+
+                if ($statusCode === 403) {
+                    Plugin::error("Flickr API returned 403 Forbidden. Server IP may be blocked by Flickr. Response: " . substr($responseBody, 0, 500));
+                } else {
+                    Plugin::error("Flickr API request failed with status $statusCode: " . substr($responseBody, 0, 500));
+                }
+                return null;
+            } catch (\Exception $e) {
+                Plugin::error("Flickr API request failed: " . $e->getMessage());
                 return null;
             }
-
-            // cache the response
-            Craft::$app->cache->set("flickr-fetch:$cacheQuery", $data, 60 * 60 * 2);
         }
-
         
         return $data;
 
@@ -459,6 +490,29 @@ class FlickrService extends Component {
         $result = join(', ', $extras);
 
         return $result;
+    }
+    
+    /**
+     * Track request and check if we're approaching rate limits, and throttle if needed.
+     */
+    private function throttleRequest(): void {
+        $cache = Craft::$app->cache;
+        $requests = $cache->get(self::RATE_LIMIT_CACHE_KEY) ?: [];
+        
+        // Remove requests older than 1 minute
+        $requests = array_values(array_filter($requests, fn($timestamp) => (time() - $timestamp) < 60));
+
+        // add current timestamp
+        $requests[] = time();
+        
+        // If we're at or above the limit, wait
+        if (count($requests) > self::RATE_LIMIT_REQUESTS_PER_MINUTE) {
+            Plugin::info("Rate limit threshold reached. Throttling API requests for " . self::RATE_LIMIT_THROTTLE_DELAY . " seconds.");
+            sleep(self::RATE_LIMIT_THROTTLE_DELAY);
+        }
+        
+        // Store for 2 minutes to be safe
+        $cache->set(self::RATE_LIMIT_CACHE_KEY, $requests, 120);
     }
 
 }

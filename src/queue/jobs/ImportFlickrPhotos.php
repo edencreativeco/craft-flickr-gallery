@@ -60,7 +60,7 @@ class ImportFlickrPhotos extends BaseJob {
 
         if (!$this->photoIds) return;
 
-        $as = new AssetsService();        
+        $as = new AssetsService();
         $fs = new FlickrService();
 
         $useAlbumName = Plugin::$plugin->siteSettings->albumNameAsSubfolder;
@@ -110,6 +110,9 @@ class ImportFlickrPhotos extends BaseJob {
                     $photo = $fs->getCachedPhotoData($id) ?? $fs->getPhotoInfo($id);
                     if (!$photo) throw new \Exception("photo with id $id not found");
     
+                    // Small delay between photo info requests to avoid rate limiting
+                    usleep(250 * 1000); // 0.25 second delay
+
                     Plugin::info(json_encode($photo));
     
                     $importUrl = $photo->original;
