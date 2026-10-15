@@ -1,5 +1,11 @@
 # Release Notes for craft-flickr-gallery
 
+## 2.0.0 - 2026-10-15
+
+### Added
+- Added version support for Craft 5
+- Added refresh button to force a cache reset and reload of Flickr content
+
 ## 1.1.6 - 2025-12-08
 
 ### Changed
