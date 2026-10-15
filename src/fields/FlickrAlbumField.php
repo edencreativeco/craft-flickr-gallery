@@ -37,7 +37,7 @@ class FlickrAlbumField extends Field {
     }
 
     // Define the database column type for the field
-    public static function valueType(): string
+    public static function phpType(): string
     {
         return 'int';        
     }
