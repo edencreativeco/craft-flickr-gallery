@@ -24,12 +24,14 @@ class FlickrController extends Controller {
         $page = $this->request->getQueryParam('page');
         $perpage = $this->request->getQueryParam('perpage');
         $checkImported = (bool)$this->request->getQueryParam('check_imported', false);
+        $ignoreCache = (bool)$this->request->getQueryParam('ignore_cache', false);
 
         $fs = new FlickrService();
         $data = $fs->getPhotos([
             'size' => $size,
             'page' => $page,
             'perpage' => $perpage,
+            'ignoreCache' => $ignoreCache,
         ]);
 
 
@@ -44,11 +46,13 @@ class FlickrController extends Controller {
 
         $page = $this->request->getQueryParam('page');
         $perpage = $this->request->getQueryParam('perpage');
+        $ignoreCache = (bool)$this->request->getQueryParam('ignore_cache', false);
 
         $fs = new FlickrService();
         $data = $fs->getPhotosets([
             'page' => $page,
             'perpage' => $perpage,
+            'ignoreCache' => $ignoreCache,
         ]);
 
         return $this->asJson($data?->photosets);
@@ -61,6 +65,7 @@ class FlickrController extends Controller {
         $page = $this->request->getQueryParam('page');
         $perpage = $this->request->getQueryParam('perpage');
         $checkImported = (bool)$this->request->getQueryParam('check_imported', false);
+        $ignoreCache = (bool)$this->request->getQueryParam('ignore_cache', false);
 
         $fs = new FlickrService();
 
@@ -68,6 +73,7 @@ class FlickrController extends Controller {
             'size' => $size,
             'page' => $page,
             'perpage' => $perpage,
+            'ignoreCache' => $ignoreCache,
         ]);
 
 

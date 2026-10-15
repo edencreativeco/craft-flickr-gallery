@@ -45,7 +45,7 @@ class FlickrService extends Component {
             'per_page' => $options['perpage'] ?? $options['per_page'] ?? 20,
             'page' => $options['page'] ?? 1,
             'extras' => $extras,
-        ]);
+        ], 7200, !empty($options['ignoreCache']));
 
         $size = $options['size'] ?? null;
 
@@ -119,7 +119,7 @@ class FlickrService extends Component {
         $results = $this->fetch('photosets.getList', [
             'per_page' => $options['perpage'] ?? $options['per_page'] ?? 20,
             'page' => $options['page'] ?? 1,
-        ]);
+        ], 7200, !empty($options['ignoreCache']));
 
         // Add cover photo urls to each photoset
         if (!empty($results?->photosets->photoset)) {
@@ -148,7 +148,7 @@ class FlickrService extends Component {
             'per_page' => $options['perpage'] ?? $options['per_page'] ?? 20,
             'page' => $options['page'] ?? 1,
             'extras' => $extras,
-        ]);
+        ], 7200, !empty($options['ignoreCache']));
 
         // Plugin::info(json_encode($results));
 
@@ -310,7 +310,7 @@ class FlickrService extends Component {
      * @param   array   $params         any additional params to call
      * @param   int     $cacheDuration  cache duration in seconds (default: 2 hours)
      */
-    private function fetch(string $flickrMethod, array $params = [], int $cacheDuration = 7200): ?object {
+    private function fetch(string $flickrMethod, array $params = [], int $cacheDuration = 7200, bool $ignoreCache = false): ?object {
         $settings = Plugin::$plugin->getSettings();
         $oauthToken = (new TokensService())->getToken();
         if (!$oauthToken) return null;
@@ -345,7 +345,7 @@ class FlickrService extends Component {
         $cacheQuery = http_build_query(array_merge($apiParams, ['api_key' => $settings->flickrApiKey, 'flickr_username' => $settings->flickrUsername]));
 
         // check our fetch cache
-        $data = Craft::$app->cache->get("flickr-fetch:$cacheQuery");
+        $data = $ignoreCache ? false : Craft::$app->cache->get("flickr-fetch:$cacheQuery");
 
         if (!$data) {
             // Make the request

@@ -36,8 +36,9 @@
 
                 <div id="photostream-modal" class="modal flickr-album-modal" style="display: none;">
                     <div class="container">
-                        <div class="header">
+                        <div class="header flickr-modal-header">
                             <h2>Photostream</h2>
+                            <button class="btn" type="button" data-flickr-refresh>Refresh</button>
                         </div>
                         <div class="body">
                             <div class="flickr-photos"></div>
@@ -65,12 +66,16 @@
 
         {% set photosets = craft.flickr.getPhotosets({
             page: craft.app.request.getQueryParam('albums-page') ?? 1,
-            perpage: 30
+            perpage: 30,
+            ignoreCache: craft.app.request.getQueryParam('refresh-albums') == '1'
         }) %}
 
         {% if photosets %}
         
-            <h2>Albums</h2>
+            <div class="flickr-list-header">
+                <h2>Albums</h2>
+                <button class="btn" type="button" data-refresh-albums>Refresh</button>
+            </div>
             <div>
                 <div class="flickr-albums">
                     {% for photoset in photosets.albums %}
@@ -91,8 +96,9 @@
 
                         <div id="{{ modalId }}" data-photoset-id="{{ photoset.id }}" class="modal flickr-album-modal" style="display: none;">
                             <div class="container">
-                                <div class="header">
-                                        <h2>{{ albumTitle }}</h2>
+                                <div class="header flickr-modal-header">
+                                    <h2>{{ albumTitle }}</h2>
+                                    <button class="btn" type="button" data-flickr-refresh>Refresh</button>
                                 </div>
                                 <div class="body">
                                     <div class="flickr-photos">
